@@ -465,18 +465,18 @@
             }
         };
 
-        // Load data from localStorage on page load
-        function loadData() {
-            const savedData = localStorage.getItem('asmBudgetData');
-            if (savedData) {
-                appData = JSON.parse(savedData);
-                updateUI();
+    // Load data from Firebase
+    async function loadData() {
+      const doc = await db.collection("asmData").doc("main").get();
+      if (doc.exists) {
+        appData = doc.data();
+        updateUI();
             }
         }
 
-        // Save data to localStorage
-        function saveData() {
-            localStorage.setItem('asmBudgetData', JSON.stringify(appData));
+      // Save data to Firebase
+    async function saveData() {
+      await db.collection("asmData").doc("main").set(appData);
         }
 
         // Update UI with current data
@@ -723,6 +723,27 @@
                 document.getElementById('reimbursementCap').value = reimbursementCap.toFixed(2);
             });
         });
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+<script>
+  // Your Firebase config (from Step 4)
+  const firebaseConfig = {
+    apiKey: "AIzaSyD7qAww543Re2SoXhHr8ParK26TZz6AgD4",
+    authDomain: "asm-sport-club.firebaseapp.com",
+    projectId: "asm-sport-club",
+    storageBucket: "asm-sport-club.firebasestorage.app",
+    messagingSenderId: "811938939629",
+    appId: "1:811938939629:web:26fb732b5125fb0caf42e4"
+  };
+
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+	
     </script>
 </body>
 </html>
