@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASM Sport Club Budget Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Calibri', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 5px solid #4a90e2;
+        }
+
+        .company-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .presidents {
+            font-size: 1.1em;
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-left: 5px solid #4a90e2;
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: 'Calibri', Arial, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Calibri', Arial, sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(230, 126, 34, 0.3);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .summary-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .auto-field {
+            background-color: #f8f9fa !important;
+            color: #6c757d;
+        }
+
+        .currency {
+            text-align: right;
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-good { background-color: #27ae60; }
+        .status-warning { background-color: #f39c12; }
+        .status-danger { background-color: #e74c3c; }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #f39c12;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #e74c3c;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .company-name {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="company-name">ADVANCED SERVICES AND MAINTENANCE</div>
+            <div class="presidents">
+                Current Presidents: 
+                <span id="president1">Jeremy MERCADAL</span> and 
+                <span id="president2">Maxence ESTIEVENART</span> 
+                for <span id="currentYear">2025</span>
+            </div>
+        </div>
+
+        <!-- Annual Budget Setup -->
+        <div class="card">
+            <div class="card-title">
+                💰 Annual Budget Setup
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="budgetYear">Year</label>
+                    <input type="number" id="budgetYear" value="2025" min="2020" max="2030">
+                </div>
+                <div class="form-group">
+                    <label for="totalBudget">Total Allocated Budget (QAR)</label>
+                    <input type="number" id="totalBudget" step="0.01" placeholder="100000.00">
+                </div>
+                <div class="form-group">
+                    <label for="reimbursementCap">Reimbursement Cap (15%)</label>
+                    <input type="number" id="reimbursementCap" class="auto-field" readonly>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="updateBudget()">
+                💾 Update Budget
+            </button>
+        </div>
+
+        <!-- Budget Summary -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-value" id="summaryReimbursementCap">0.00 QAR</div>
+                <div class="summary-label">Company Reimbursement Cap (15%)</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" id="summaryTotalReimbursed">0.00 QAR</div>
+                <div class="summary-label">Total Reimbursed So Far</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" id="summaryRemainingReimbursement">0.00 QAR</div>
+                <div class="summary-label">Remaining Reimbursement Budget</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" id="summaryRemainingClub">0.00 QAR</div>
+                <div class="summary-label">Remaining Club Budget</div>
+            </div>
+        </div>
+
+        <!-- Activity Entry Form -->
+        <div class="card">
+            <div class="card-title">
+                📋 Activity Entry Form
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="activityType">Activity Type</label>
+                    <select id="activityType">
+                        <option value="">Select Activity</option>
+                        <option value="Pétanque">Pétanque</option>
+                        <option value="Padel">Padel</option>
+                        <option value="Karting">Karting</option>
+                        <option value="Football">Football</option>
+                        <option value="Ping-Pong">Ping-Pong</option>
+                        <option value="Paintball">Paintball</option>
+                        <option value="Golf">Golf</option>
+                        <option value="Bowling">Bowling</option>
+                        <option value="Jetski">Jetski</option>
+                        <option value="Kayak">Kayak</option>
+                        <option value="Paddle">Paddle</option>
+                        <option value="Billiards">Billiards</option>
+                        <option value="Orienteering">Orienteering</option>
+                        <option value="Fitness">Fitness</option>
+                        <option value="Beach volley">Beach volley</option>
+                        <option value="Table football">Table football</option>
+                        <option value="Running">Running</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="supplier">Supplier</label>
+                    <input type="text" id="supplier" placeholder="Enter supplier name">
+                </div>
+                <div class="form-group">
+                    <label for="activityDate">Date of Activity</label>
+                    <input type="date" id="activityDate">
+                </div>
+                <div class="form-group">
+                    <label for="invoiceNumber">Invoice/Receipt Number</label>
+                    <input type="text" id="invoiceNumber" placeholder="Enter invoice number">
+                </div>
+                <div class="form-group">
+                    <label for="totalInvoice">Total Invoice Amount (QAR)</label>
+                    <input type="number" id="totalInvoice" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="totalParticipants">Number of Participants</label>
+                    <input type="number" id="totalParticipants" min="1" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label for="perPersonCost">Per Person Cost (QAR)</label>
+                    <input type="number" id="perPersonCost" class="auto-field" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="deduction">Deduction (if any)</label>
+                    <input type="number" id="deduction" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="asmEmployees">ASM Employees Participating</label>
+                    <input type="number" id="asmEmployees" min="0" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label for="eligibleAmount">Eligible ASM Amount (QAR)</label>
+                    <input type="number" id="eligibleAmount" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="reimbursementAmount">Reimbursement (15%) (QAR)</label>
+                    <input type="number" id="reimbursementAmount" class="auto-field" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="eureciaNumber">EURECIA Expense Number</label>
+                    <input type="text" id="eureciaNumber" placeholder="Enter EURECIA number">
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="addActivity()">
+                    ➕ Add Activity
+                </button>
+                <button class="btn btn-primary" onclick="calculateFields()">
+                    🧮 Recalculate
+                </button>
+            </div>
+        </div>
+
+        <!-- Activities Table -->
+        <div class="card">
+            <div class="card-title">
+                📊 Activities Breakdown
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-export" onclick="exportToExcel()">
+                    📊 Export to Excel
+                </button>
+                <button class="btn btn-export" onclick="exportToPDF()">
+                    📄 Export to PDF
+                </button>
+            </div>
+            <div class="table-container">
+                <table id="activitiesTable">
+                    <thead>
+                        <tr>
+                            <th>Activity Type</th>
+                            <th>Date</th>
+                            <th>Supplier</th>
+                            <th>Invoice #</th>
+                            <th>Total Invoice (QAR)</th>
+                            <th>Participants</th>
+                            <th>ASM Employees</th>
+                            <th>Eligible Amount (QAR)</th>
+                            <th>Reimbursement (QAR)</th>
+                            <th>EURECIA #</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activitiesTableBody">
+                        <!-- Activities will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let appData = {
+            budget: {
+                year: 2025,
+                totalBudget: 0,
+                reimbursementCap: 0
+            },
+            activities: [],
+            presidents: {
+                president1: "Jeremy MERCADAL",
+                president2: "Maxence ESTIEVENART"
+            }
+        };
+
+        // Load data from localStorage on page load
+        function loadData() {
+            const savedData = localStorage.getItem('asmBudgetData');
+            if (savedData) {
+                appData = JSON.parse(savedData);
+                updateUI();
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('asmBudgetData', JSON.stringify(appData));
+        }
+
+        // Update UI with current data
+        function updateUI() {
+            // Update budget fields
+            document.getElementById('budgetYear').value = appData.budget.year;
+            document.getElementById('totalBudget').value = appData.budget.totalBudget;
+            document.getElementById('reimbursementCap').value = appData.budget.reimbursementCap;
+            
+            // Update presidents
+            document.getElementById('president1').textContent = appData.presidents.president1;
+            document.getElementById('president2').textContent = appData.presidents.president2;
+            document.getElementById('currentYear').textContent = appData.budget.year;
+
+            // Update summary
+            updateSummary();
+            
+            // Update activities table
+            updateActivitiesTable();
+        }
+
+        // Calculate automatic fields
+        function calculateFields() {
+            const totalInvoice = parseFloat(document.getElementById('totalInvoice').value) || 0;
+            const totalParticipants = parseInt(document.getElementById('totalParticipants').value) || 0;
+            const asmEmployees = parseInt(document.getElementById('asmEmployees').value) || 0;
+            const deduction = parseFloat(document.getElementById('deduction').value) || 0;
+
+            // Calculate per person cost
+            const perPersonCost = totalParticipants > 0 ? totalInvoice / totalParticipants : 0;
+            document.getElementById('perPersonCost').value = perPersonCost.toFixed(2);
+
+            // Calculate eligible amount
+            const eligibleAmount = (perPersonCost * asmEmployees) - deduction;
+            document.getElementById('eligibleAmount').value = eligibleAmount.toFixed(2);
+
+            // Calculate reimbursement (15%)
+            const reimbursementAmount = eligibleAmount * 0.15;
+            document.getElementById('reimbursementAmount').value = reimbursementAmount.toFixed(2);
+        }
+
+        // Update budget
+        function updateBudget() {
+            const year = parseInt(document.getElementById('budgetYear').value);
+            const totalBudget = parseFloat(document.getElementById('totalBudget').value) || 0;
+            const reimbursementCap = totalBudget * 0.15;
+
+            appData.budget = {
+                year: year,
+                totalBudget: totalBudget,
+                reimbursementCap: reimbursementCap
+            };
+
+            document.getElementById('reimbursementCap').value = reimbursementCap.toFixed(2);
+            document.getElementById('currentYear').textContent = year;
+
+            updateSummary();
+            saveData();
+        }
+
+        // Add activity
+        function addActivity() {
+            // Validate required fields
+            const activityType = document.getElementById('activityType').value;
+            const supplier = document.getElementById('supplier').value;
+            const activityDate = document.getElementById('activityDate').value;
+            const totalInvoice = parseFloat(document.getElementById('totalInvoice').value) || 0;
+            const totalParticipants = parseInt(document.getElementById('totalParticipants').value) || 0;
+
+            if (!activityType || !supplier || !activityDate || totalInvoice <= 0 || totalParticipants <= 0) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Calculate fields one more time
+            calculateFields();
+
+            // Create activity object
+            const activity = {
+                id: Date.now(),
+                activityType: activityType,
+                supplier: supplier,
+                date: activityDate,
+                invoiceNumber: document.getElementById('invoiceNumber').value,
+                totalInvoice: totalInvoice,
+                totalParticipants: totalParticipants,
+                perPersonCost: parseFloat(document.getElementById('perPersonCost').value) || 0,
+                deduction: parseFloat(document.getElementById('deduction').value) || 0,
+                asmEmployees: parseInt(document.getElementById('asmEmployees').value) || 0,
+                eligibleAmount: parseFloat(document.getElementById('eligibleAmount').value) || 0,
+                reimbursementAmount: parseFloat(document.getElementById('reimbursementAmount').value) || 0,
+                eureciaNumber: document.getElementById('eureciaNumber').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Check if adding this activity would exceed reimbursement cap
+            const currentTotal = appData.activities.reduce((sum, act) => sum + act.reimbursementAmount, 0);
+            if (currentTotal + activity.reimbursementAmount > appData.budget.reimbursementCap) {
+                if (!confirm('Warning: This activity will exceed the reimbursement cap. Do you want to continue?')) {
+                    return;
+                }
+            }
+
+            // Add activity to data
+            appData.activities.push(activity);
+
+            // Clear form
+            clearActivityForm();
+
+            // Update UI
+            updateActivitiesTable();
+            updateSummary();
+            saveData();
+        }
+
+        // Clear activity form
+        function clearActivityForm() {
+            const formFields = [
+                'activityType', 'supplier', 'activityDate', 'invoiceNumber',
+                'totalInvoice', 'totalParticipants', 'perPersonCost', 'deduction',
+                'asmEmployees', 'eligibleAmount', 'reimbursementAmount', 'eureciaNumber'
+            ];
+
+            formFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element.type === 'select-one') {
+                    element.selectedIndex = 0;
+                } else {
+                    element.value = '';
+                }
+            });
+        }
+
+        // Update activities table
+        function updateActivitiesTable() {
+            const tbody = document.getElementById('activitiesTableBody');
+            tbody.innerHTML = '';
+
+            appData.activities.forEach(activity => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${activity.activityType}</td>
+                    <td>${new Date(activity.date).toLocaleDateString()}</td>
+                    <td>${activity.supplier}</td>
+                    <td>${activity.invoiceNumber}</td>
+                    <td class="currency">${activity.totalInvoice.toFixed(2)}</td>
+                    <td>${activity.totalParticipants}</td>
+                    <td>${activity.asmEmployees}</td>
+                    <td class="currency">${activity.eligibleAmount.toFixed(2)}</td>
+                    <td class="currency">${activity.reimbursementAmount.toFixed(2)}</td>
+                    <td>${activity.eureciaNumber}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editActivity(${activity.id})" style="padding: 5px 10px; font-size: 0.8em;">Edit</button>
+                        <button class="btn btn-export" onclick="deleteActivity(${activity.id})" style="padding: 5px 10px; font-size: 0.8em; background: #e74c3c;">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update summary
+        function updateSummary() {
+            const totalReimbursed = appData.activities.reduce((sum, activity) => sum + activity.reimbursementAmount, 0);
+            const totalEligible = appData.activities.reduce((sum, activity) => sum + activity.eligibleAmount, 0);
+            const remainingReimbursement = appData.budget.reimbursementCap - totalReimbursed;
+            const remainingClub = appData.budget.totalBudget - totalEligible;
+
+            document.getElementById('summaryReimbursementCap').textContent = `${appData.budget.reimbursementCap.toFixed(2)} QAR`;
+            document.getElementById('summaryTotalReimbursed').textContent = `${totalReimbursed.toFixed(2)} QAR`;
+            document.getElementById('summaryRemainingReimbursement').textContent = `${remainingReimbursement.toFixed(2)} QAR`;
+            document.getElementById('summaryRemainingClub').textContent = `${remainingClub.toFixed(2)} QAR`;
+        }
+
+        // Delete activity
+        function deleteActivity(id) {
+            if (confirm('Are you sure you want to delete this activity?')) {
+                appData.activities = appData.activities.filter(activity => activity.id !== id);
+                updateActivitiesTable();
+                updateSummary();
+                saveData();
+            }
+        }
+
+        // Edit activity (simplified - you can expand this)
+        function editActivity(id) {
+            const activity = appData.activities.find(act => act.id === id);
+            if (activity) {
+                // Populate form with activity data
+                document.getElementById('activityType').value = activity.activityType;
+                document.getElementById('supplier').value = activity.supplier;
+                document.getElementById('activityDate').value = activity.date;
+                document.getElementById('invoiceNumber').value = activity.invoiceNumber;
+                document.getElementById('totalInvoice').value = activity.totalInvoice;
+                document.getElementById('totalParticipants').value = activity.totalParticipants;
+                document.getElementById('deduction').value = activity.deduction;
+                document.getElementById('asmEmployees').value = activity.asmEmployees;
+                document.getElementById('eligibleAmount').value = activity.eligibleAmount;
+                document.getElementById('eureciaNumber').value = activity.eureciaNumber;
+
+                // Remove the activity so it can be re-added
+                deleteActivity(id);
+                
+                // Scroll to form
+                document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Export to Excel (simplified)
+        function exportToExcel() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Activity Type,Date,Supplier,Invoice #,Total Invoice (QAR),Participants,ASM Employees,Eligible Amount (QAR),Reimbursement (QAR),EURECIA #\n";
+            
+            appData.activities.forEach(activity => {
+                csvContent += `"${activity.activityType}","${activity.date}","${activity.supplier}","${activity.invoiceNumber}",${activity.totalInvoice},${activity.totalParticipants},${activity.asmEmployees},${activity.eligibleAmount.toFixed(2)},${activity.reimbursementAmount.toFixed(2)},"${activity.eureciaNumber}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `ASM_Budget_Export_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Export to PDF (simplified)
+        function exportToPDF() {
+            window.print();
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+
+            // Auto-calculate fields when relevant inputs change
+            ['totalInvoice', 'totalParticipants', 'asmEmployees', 'deduction'].forEach(id => {
+                document.getElementById(id).addEventListener('input', calculateFields);
+            });
+
+            // Auto-update reimbursement cap when total budget changes
+            document.getElementById('totalBudget').addEventListener('input', function() {
+                const totalBudget = parseFloat(this.value) || 0;
+                const reimbursementCap = totalBudget * 0.15;
+                document.getElementById('reimbursementCap').value = reimbursementCap.toFixed(2);
+            });
+        });
+    </script>
+</body>
+</html>
